@@ -2,6 +2,7 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use common\models\Ticket;
 
 /** @var yii\web\View $this */
 /** @var common\models\Ticket $model */
@@ -32,10 +33,20 @@ $this->params['breadcrumbs'][] = $this->title;
             'id',
             'title',
             'description:ntext',
-            'status',
-            'created_at',
-            'updated_at',
-            'created_by',
+            [
+                'attribute' => 'status',
+                'format' => 'raw',
+                'value' => function ($model) {
+                    if ($model->status == Ticket::STATUS_RESOLVED) {
+                        return '<span class="badge bg-success">Resolved</span>';
+                    } else {
+                        return '<span class="badge bg-danger">Open</span>';
+                    }
+                },
+            ],
+            'created_at:datetime', // Shows formatted date like "Dec 23, 2025 3:58 PM"
+            'updated_at:datetime',
+            // 'created_by' is removed
         ],
     ]) ?>
 

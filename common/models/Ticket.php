@@ -68,6 +68,7 @@ class Ticket extends \yii\db\ActiveRecord
         return [
             [
                 "class" => \yii\behaviors\TimestampBehavior::class,
+                'value' => new \yii\db\Expression('NOW()'),
                 "attributes" => [
                     \yii\db\ActiveRecord::EVENT_BEFORE_INSERT => ["created_at", "updated_at"],
                     \yii\db\ActiveRecord::EVENT_BEFORE_UPDATE => ["updated_at"],

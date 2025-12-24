@@ -52,9 +52,12 @@ class TicketController extends Controller
         $searchModel = new TicketSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
 
+        $newTicket = new Ticket();
+
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'newTicket' => $newTicket, // For the create ticket form
         ]);
     }
 
