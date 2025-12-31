@@ -20,6 +20,7 @@ AppAsset::register($this);
     <meta charset="<?= Yii::$app->charset ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <?php $this->registerCsrfMetaTags() ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
     <style>
@@ -46,29 +47,55 @@ AppAsset::register($this);
         }
 
         /* Floating Navbar Styles */
-        .floating-nav-container {
-            z-index: 1030;
-            pointer-events: none;
-            /* Allow clicking through the container */
+
+
+        .navbar-nav .nav-link {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            margin: 0 5px;
+            color: #6c757d;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
         }
 
-        .floating-nav {
-            pointer-events: auto;
-            /* Re-enable clicks on the nav itself */
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.9) !important;
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(13, 110, 253, 0.1);
+            color: #0d6efd;
+            transform: translateY(-2px);
         }
 
-        .nav-link {
-            border-radius: 50px;
-            padding: 8px 16px !important;
+        .navbar-nav .nav-link.active {
+            background-color: #0d6efd;
+            color: white !important;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.3);
+        }
+
+        /* Logout Button Styling */
+        .logout-btn {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            color: #dc3545;
+            /* Danger color */
+            border-radius: 50%;
             transition: all 0.2s;
+            font-size: 1.1rem;
         }
 
-        .nav-link:hover {
-            background-color: rgba(0, 0, 0, 0.05);
-            transform: translateY(-1px);
+        .logout-btn:hover {
+            background-color: rgba(220, 53, 69, 0.1);
+            transform: translateY(-2px);
         }
+
+        */
     </style>
 </head>
 
@@ -78,7 +105,7 @@ AppAsset::register($this);
     <header class="fixed-top d-flex justify-content-center mt-3 floating-nav-container">
         <?php
         NavBar::begin([
-            'brandLabel' => '<i class="fas fa-ticket-alt text-primary me-2"></i><span class="fw-bold text-dark">' . Yii::$app->name . '</span>',
+            'brandLabel' => '<i class="fa-solid fa-ticket text-secondary me-2"></i>',
             'brandUrl' => Yii::$app->homeUrl,
             'options' => [
                 'class' => 'navbar navbar-expand navbar-light bg-white shadow rounded-pill px-4 floating-nav col-11 col-md-6',
@@ -89,32 +116,55 @@ AppAsset::register($this);
 
         $menuItems = [];
 
-        // Home Link with Icon
-        $menuItems[] = [
-            'label' => '<i class="fas fa-home">Home</i>',
-            'url' => ['/site/index'],
-            'encode' => false,
-            'linkOptions' => ['class' => 'nav-link text-secondary fs-5', 'title' => 'Home']
-        ];
-
         if (Yii::$app->user->isGuest) {
-            $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
-            $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+            $menuItems[] = [
+                'label' => '<i class="fas fa-user-plus"></i>',
+                'url' => ['/site/signup'],
+                'encode' => false,
+                'linkOptions' => [
+                    'title' => 'Signup',
+                    'data-bs-toggle' => 'tooltip',
+                    'data-bs-placement' => 'bottom'
+                ]
+            ];
+            $menuItems[] = [
+                'label' => '<i class="fas fa-sign-in-alt"></i>',
+                'url' => ['/site/login'],
+                'encode' => false,
+                'linkOptions' => [
+                    'title' => 'Login',
+                    'data-bs-toggle' => 'tooltip',
+                    'data-bs-placement' => 'bottom'
+                ]
+            ];
+        } else {
+            // Tickets Link (Added for logged in users)
+            $menuItems[] = [
+                'label' => '<i class="fas fa-clipboard-list"></i>',
+                'url' => ['/ticket/index'],
+                'encode' => false,
+                'linkOptions' => [
+                    'title' => 'My Tickets',
+                    'data-bs-toggle' => 'tooltip',
+                    'data-bs-placement' => 'bottom'
+                ]
+            ];
         }
 
         echo Nav::widget([
-            'options' => ['class' => 'navbar-nav me-auto mb-2 mb-md-0 align-items-center'],
+            'options' => ['class' => 'navbar-nav me-auto align-items-center'],
             'items' => $menuItems,
         ]);
 
         if (!Yii::$app->user->isGuest) {
-            echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex align-items-center ms-3'])
+            echo Html::beginForm(['/site/logout'], 'post', ['class' => 'd-flex align-items-center ms-2'])
                 . Html::submitButton(
-                    '<i class="fas fa-sign-out-alt"></i>',
+                    '<i class="fas fa-power-off"></i>',
                     [
-                        'class' => 'btn btn-light text-danger rounded-circle shadow-sm',
+                        'class' => 'logout-btn',
                         'title' => 'Logout (' . Yii::$app->user->identity->username . ')',
-                        'style' => 'width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;'
+                        'data-bs-toggle' => 'tooltip',
+                        'data-bs-placement' => 'bottom'
                     ]
                 )
                 . Html::endForm();
@@ -138,6 +188,14 @@ AppAsset::register($this);
     </footer>
 
     <?php $this->endBody() ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+        });
+    </script>
 </body>
 
 </html>

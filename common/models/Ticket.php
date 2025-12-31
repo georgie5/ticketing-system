@@ -83,19 +83,37 @@ class Ticket extends \yii\db\ActiveRecord
     }
 
     /**
+     * Gets the username of the creator
+     * @return string
+     */
+    public function getCreatorName()
+    {
+        return $this->createdBy ? $this->createdBy->username : 'Unknown';
+    }
+
+    /**
      * Gets the label for the current status.
-     *
      * @return string
      */
     public function getStatusLabel()
     {
-        switch ($this->status) {
-            case self::STATUS_OPEN:
-                return 'Open';
-            case self::STATUS_RESOLVED:
-                return 'Resolved';
-            default:
-                return 'Unknown';
-        }
+        return self::getStatusLabels()[$this->status] ?? 'Unknown';
+    }
+
+    public static function getStatusLabels()
+    {
+        return [
+            self::STATUS_OPEN => 'Open',
+            self::STATUS_RESOLVED => 'Resolved',
+        ];
+    }
+
+    public function getStatusBadge()
+    {
+        $badges = [
+            self::STATUS_OPEN => '<span class="badge bg-warning">Open</span>',
+            self::STATUS_RESOLVED => '<span class="badge bg-success">Resolved</span>',
+        ];
+        return $badges[$this->status] ?? '<span class="badge bg-secondary">Unknown</span>';
     }
 }

@@ -16,6 +16,51 @@ use yii\bootstrap5\ActiveForm;
 $this->title = 'Ticket Board';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+<style>
+    /* Smooth modal transition without glitching */
+    body.modal-open {
+        overflow: hidden;
+        padding-right: 0 !important;
+    }
+
+    .modal {
+        transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    }
+
+    .modal.show {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .modal:not(.show) {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .modal-dialog {
+        transition: transform 0.3s ease-out;
+    }
+
+    .modal.show .modal-dialog {
+        transform: translateY(0);
+    }
+
+    .modal:not(.show) .modal-dialog {
+        transform: translateY(-50px);
+    }
+
+    .modal-backdrop {
+        transition: opacity 0.3s ease-out;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.5;
+    }
+
+    .modal-backdrop:not(.show) {
+        opacity: 0;
+    }
+</style>
 <div class="ticket-index">
 
     <div class="d-flex justify-content-between align-items-center mb-5">
@@ -73,7 +118,22 @@ $this->params['breadcrumbs'][] = $this->title;
             $tape = '<div class="position-absolute top-0 start-50 translate-middle bg-white bg-opacity-50 shadow-sm" style="width: 100px; height: 30px; z-index: 1; transform: rotate(-2deg);"></div>';
 
             $url = Url::to(['view', 'id' => $model->id]);
-            $time = Yii::$app->formatter->asDatetime($model->created_at, 'medium');
+            $time = Yii::$app->formatter->asDatetime($model->created_at, 'MMM dd, yyyy HH:mm');
+
+            // Delete button
+            $deleteBtn = Html::beginForm(
+                ['delete', 'id' => $model->id],
+                'post',
+                ['style' => 'display: inline;']
+            ) . Html::submitButton(
+                '<i class="fas fa-trash-alt"></i>',
+                [
+                    'class' => 'btn btn-sm btn-outline-danger',
+                    'title' => 'Delete',
+                    'style' => 'width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 30%; transition: all 0.2s;',
+                    'onclick' => 'return confirm("Are you sure you want to delete this ticket?");'
+                ]
+            ) . Html::endForm();
 
             return "
             <div class='h-100 position-relative pt-3'>
@@ -97,9 +157,12 @@ $this->params['breadcrumbs'][] = $this->title;
                                 " . Html::encode($model->description) . "
                             </p>
                             
-                            <div class='mt-3 pt-3 border-top border-dark border-opacity-10 d-flex justify-content-between align-items-center'>
+                          
+                           <div class='mt-auto pt-3 border-top border-dark border-opacity-10 d-flex justify-content-between align-items-center'>
                                 <small class='text-muted'><i class='far fa-clock me-1'></i>{$time}</small>
-                                
+                                <div onclick='event.stopPropagation();'>
+                                    {$deleteBtn}
+                                </div>
                             </div>
                         </div>
                     </div>

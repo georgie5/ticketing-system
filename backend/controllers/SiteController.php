@@ -9,6 +9,7 @@ use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use common\models\TicketSearch;
+use common\models\User;
 
 /**
  * Site controller
@@ -32,8 +33,17 @@ class SiteController extends Controller
                         'actions' => ['logout', 'index'],
                         'allow' => true,
                         'roles' => ['@'],
+                        'matchCallback' => function ($rule, $action) {
+                            $user = Yii::$app->user->identity;
+                            return $user instanceof User && $user->isAdmin();
+                        },
                     ],
                 ],
+                'denyCallback' => function ($rule, $action) {
+                    Yii::$app->user->logout();
+                    Yii::$app->session->setFlash('error', 'Access denied. Admins only.');
+                    return Yii::$app->response->redirect(['site/login']);
+                },
             ],
             'verbs' => [
                 'class' => VerbFilter::class,
@@ -80,6 +90,12 @@ class SiteController extends Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
+            $user = Yii::$app->user->identity;
+            if (!($user instanceof User) || !$user->isAdmin()) {
+                Yii::$app->user->logout();
+                Yii::$app->session->setFlash('error', 'Access denied. Admins only.');
+                return $this->refresh();
+            }
             return $this->goHome();
         }
 
@@ -87,6 +103,13 @@ class SiteController extends Controller
 
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
+            $user = Yii::$app->user->identity;
+            if (!($user instanceof User) || !$user->isAdmin()) {
+                Yii::$app->user->logout();
+                Yii::$app->session->setFlash('error', 'Access denied. Admins only.');
+                return $this->redirect(['site/login']);
+            }
+            Yii::$app->session->removeFlash('error');
             return $this->goBack();
         }
 

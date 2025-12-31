@@ -29,17 +29,10 @@ class TicketController extends Controller
                         [
                             'allow' => true,
                             'roles' => ['@'],
-                            'matchCallback' => function ($rule, $action) {
-                                /** @var \common\models\User $user */
-                                $user = Yii::$app->user->identity;
-                                return $user && $user->isAdmin();
-                            }
+
                         ],
                     ],
-                    'denyCallback' => function ($rule, $action) {
-                        Yii::$app->session->setFlash('error', 'Access denied. Admins only.');
-                        return Yii::$app->response->redirect(['site/index']);
-                    },
+
                 ],
                 'verbs' => [
                     'class' => VerbFilter::class,

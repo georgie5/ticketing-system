@@ -7,6 +7,7 @@
 use yii\bootstrap5\Html;
 use yii\bootstrap5\ActiveForm;
 
+
 $this->title = 'Login to Help Desk';
 $this->context->layout = 'auth';
 ?>
@@ -18,7 +19,7 @@ $this->context->layout = 'auth';
             <div class="col-lg-5 col-md-6 col-sm-8 mb-4">
                 <div class="card cascading-right auth-card shadow-lg" style="backdrop-filter: blur(30px);">
                     <div class="card-body p-5">
-                        <h2 class="fw-bold mb-2">Welcome Back</h2>
+                        <h2 class="fw-bold mb-2">Welcome Back to ticketing</h2>
                         <p class="text-muted mb-4">Sign in to your account</p>
 
                         <?php $form = ActiveForm::begin([

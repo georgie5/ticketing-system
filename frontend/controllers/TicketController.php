@@ -51,7 +51,7 @@ class TicketController extends Controller
     {
         $searchModel = new TicketSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        
         $newTicket = new Ticket();
 
         return $this->render('index', [
@@ -87,7 +87,7 @@ class TicketController extends Controller
             if ($model->load($this->request->post())) {
                 $model->created_by = Yii::$app->user->id;  // Set current user
                 if ($model->save()) {
-                    return $this->redirect(['view', 'id' => $model->id]);
+                    return $this->redirect(['index']);
                 }
             }
         } else {
